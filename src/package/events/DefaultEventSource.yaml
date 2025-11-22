@@ -1,0 +1,5 @@
+# src/package/events/DefaultEventSource.yaml
+events:
+  - name: hapticBurst
+    displayName: Haptic Burst
+    description: Plays a haptic burst when triggered

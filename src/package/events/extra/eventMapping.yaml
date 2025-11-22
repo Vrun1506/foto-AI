@@ -1,0 +1,5 @@
+# src/package/events/extra/eventMapping.yaml
+haptics:
+  hapticBurst:
+    DEFAULT: sharp_state_change
+    MX Master 4: sharp_collision

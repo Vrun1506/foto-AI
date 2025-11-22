@@ -1,0 +1,35 @@
+* {
+    padding: 0;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 16px;
+    width: 100%;
+}
+
+#prompt-submit-form {
+    display: flex;
+    justify-content: center;
+    width: 60%;
+}
+
+#prompt {
+    background-color: aliceblue;
+    color: #242424;
+    border: none;
+    border-radius: 10px 0px 0px 10px;
+    outline: none;
+    padding: 5px 10px;
+}
+
+#submit-button {
+    background-color: #7A25B3;
+    width: 100px;
+    height: 30px;
+    border-radius: 0px 10px 10px 0px;
+    border: none;
+    margin-left: 10px;
+}
+
+#submit-button:hover {
+    cursor: pointer;
+}

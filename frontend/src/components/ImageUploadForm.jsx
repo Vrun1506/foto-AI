@@ -60,20 +60,55 @@ const handleSubmit = async () => {
     formData.append("file", image);      // The image file
     formData.append("prompt", text);     // The prompt text
 
-    // Call Flask backend
-    const response = await fetch("http://localhost:5000/upload", {
+    // Step 1: Upload file to backend
+    console.log("📤 Uploading image...");
+    const uploadResponse = await fetch("http://localhost:5001/upload", {
       method: "POST",
       body: formData,
     });
 
-    const data = await response.json();
+    const uploadData = await uploadResponse.json();
 
-    if (!response.ok) {
-      throw new Error(data.error || "Upload failed");
+    if (!uploadResponse.ok) {
+      throw new Error(uploadData.error || "Upload failed");
     }
 
-    console.log("Upload successful:", data);
-    alert(`Upload successful! Object Name: ${data.object_name}`);
+    console.log("✅ Upload successful:", uploadData);
+    const objectName = uploadData.object_name;
+
+    // Step 2: Process image with agent
+    if (text.trim()) {
+      console.log("🤖 Starting agent processing...");
+      alert(`Image uploaded! Now processing with AI agent...\n\nPrompt: "${text}"`);
+      
+      const processResponse = await fetch("http://localhost:5001/process", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          object_name: objectName,
+          prompt: text
+        })
+      });
+
+      const processData = await processResponse.json();
+
+      if (!processResponse.ok) {
+        throw new Error(processData.error || processData.message || "Processing failed");
+      }
+
+      console.log("✅ Processing complete:", processData);
+      
+      if (processData.status === "success") {
+        alert(`✅ Processing Complete!\n\nAgent Result:\n${processData.result}`);
+      } else {
+        alert(`⚠️ Processing Issue:\n${processData.message}`);
+      }
+    } else {
+      // No prompt provided, just confirm upload
+      alert(`✅ Upload successful!\nObject Name: ${objectName}\n\nNote: Provide a prompt to process the image with AI.`);
+    }
 
     // Reset form
     setImage(null);
@@ -81,8 +116,8 @@ const handleSubmit = async () => {
     setText("");
 
   } catch (err) {
-    console.error(err);
-    alert("Error uploading file: " + err.message);
+    console.error("❌ Error:", err);
+    alert("Error: " + err.message);
   } finally {
     setIsLoading(false);
   }

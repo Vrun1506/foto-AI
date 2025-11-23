@@ -1,10 +1,10 @@
 import './App.css'
-import PromptInput from './components/PromptInput'
+import ImageUploadForm from './components/ImageUploadForm'
 
 export default function App() {
   return (
     <div>
-      <PromptInput />
+      <ImageUploadForm />
     </div>
   )
 }

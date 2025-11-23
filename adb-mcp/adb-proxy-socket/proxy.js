@@ -27,10 +27,77 @@ const express = require("express");
 const http = require("http");
 const { Server } = require("socket.io");
 const app = express();
+
+const LOCALHOST_HOSTS = new Set(["localhost", "0.0.0.0", "127.0.0.1", "::1"]);
+const isLocalhostHostname = (hostname = "") =>
+    LOCALHOST_HOSTS.has(hostname) || hostname.startsWith("127.");
+
+const isLocalhostOrigin = (origin) => {
+    if (!origin) {
+        return false;
+    }
+
+    try {
+        const { hostname, protocol } = new URL(origin);
+        const isHttpProtocol = protocol === "http:" || protocol === "https:";
+        return isHttpProtocol && isLocalhostHostname(hostname);
+    } catch (err) {
+        console.warn(`Invalid origin received: ${origin}`);
+        return false;
+    }
+};
+
+const allowLocalhostCors = (req, res, next) => {
+    const origin = req.headers.origin;
+    if (isLocalhostOrigin(origin)) {
+        res.header("Access-Control-Allow-Origin", origin);
+        res.header("Vary", "Origin");
+        res.header(
+            "Access-Control-Allow-Headers",
+            req.headers["access-control-request-headers"] ||
+                "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+        );
+        res.header(
+            "Access-Control-Allow-Methods",
+            req.headers["access-control-request-method"] ||
+                "GET,POST,PUT,PATCH,DELETE,OPTIONS"
+        );
+        res.header("Access-Control-Allow-Credentials", "true");
+
+        if (req.method === "OPTIONS") {
+            return res.sendStatus(204);
+        }
+    }
+
+    return next();
+};
+
+app.use(allowLocalhostCors);
+
 const server = http.createServer(app);
 const io = new Server(server, {
     transports: ["websocket", "polling"],
     maxHttpBufferSize: 50 * 1024 * 1024,
+    cors: {
+        origin(origin, callback) {
+            if (!origin || isLocalhostOrigin(origin)) {
+                return callback(null, true);
+            }
+            return callback(
+                new Error(`CORS blocked for non-localhost origin: ${origin}`),
+                false
+            );
+        },
+        credentials: true,
+        methods: ["GET", "POST"],
+        allowedHeaders: [
+            "Origin",
+            "X-Requested-With",
+            "Content-Type",
+            "Accept",
+            "Authorization",
+        ],
+    },
 });
 
 const PORT = 3001;

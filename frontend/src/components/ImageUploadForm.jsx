@@ -46,16 +46,47 @@ export default function ImageUploadForm() {
     setImagePreview(null);
   };
 
-  const handleSubmit = () => {
-    setIsLoading(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Submitted:', { image, text });
-      alert('Form submitted! Check console for details.');
-      setIsLoading(false);
-    }, 2000);
-  };
+const handleSubmit = async () => {
+  if (!image) {
+    alert("Please select an image first.");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    // Create FormData to send both image and prompt
+    const formData = new FormData();
+    formData.append("file", image);      // The image file
+    formData.append("prompt", text);     // The prompt text
+
+    // Call Flask backend
+    const response = await fetch("http://localhost:5000/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Upload failed");
+    }
+
+    console.log("Upload successful:", data);
+    alert(`Upload successful! Object Name: ${data.object_name}`);
+
+    // Reset form
+    setImage(null);
+    setImagePreview(null);
+    setText("");
+
+  } catch (err) {
+    console.error(err);
+    alert("Error uploading file: " + err.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return (
     <>
@@ -341,7 +372,7 @@ export default function ImageUploadForm() {
                     />
                   </label>
                   <p className="upload-hint">
-                    PNG, JPG, GIF up to 10MB
+                    PNG, JPG up to 10MB
                   </p>
                 </div>
               ) : (

@@ -6,6 +6,7 @@ export default function ImageUploadForm() {
   const [imagePreview, setImagePreview] = useState(null);
   const [text, setText] = useState('');
   const [isDragging, setIsDragging] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleImageChange = (file) => {
     if (file && file.type.startsWith('image/')) {
@@ -46,8 +47,14 @@ export default function ImageUploadForm() {
   };
 
   const handleSubmit = () => {
-    console.log('Submitted:', { image, text });
-    alert('Form submitted! Check console for details.');
+    setIsLoading(true);
+    
+    // Simulate API call
+    setTimeout(() => {
+      console.log('Submitted:', { image, text });
+      alert('Form submitted! Check console for details.');
+      setIsLoading(false);
+    }, 2000);
   };
 
   return (
@@ -67,10 +74,6 @@ export default function ImageUploadForm() {
           min-height: 100vh;
           background: linear-gradient(135deg, #EBF4FF 0%, #E0E7FF 100%);
           padding: 48px 16px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
         }
 
         .content-wrapper {
@@ -250,6 +253,55 @@ export default function ImageUploadForm() {
           background-color: #4338CA;
           box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
+
+        .submit-button:disabled {
+          background-color: #9CA3AF;
+          cursor: not-allowed;
+        }
+
+        .loading-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: rgba(0, 0, 0, 0.5);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+
+        .loading-container {
+          background: white;
+          padding: 40px;
+          border-radius: 16px;
+          text-align: center;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+          width: 20%;
+        }
+
+        .spinner {
+          width: 60px;
+          height: 60px;
+          border: 4px solid #E0E7FF;
+          border-top-color: #4F46E5;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+          margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .loading-text {
+          color: #374151;
+          font-size: 18px;
+          font-weight: 500;
+        }
       `}</style>
 
       <div className="container">
@@ -312,11 +364,11 @@ export default function ImageUploadForm() {
 
             {/* Text Input Section */}
             <div className="form-section">
-              <label className="label">Enter prompt details...</label>
+              <label className="label">Enter your prompt here...</label>
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Example: Can you decrease the expoures and saturation on this photo by 50%?"
+                placeholder="Example: Can you increase the exposure and saturation of the image by 50%?"
                 rows="4"
                 className="textarea"
               />
@@ -326,11 +378,22 @@ export default function ImageUploadForm() {
             <button
               onClick={handleSubmit}
               className="submit-button"
+              disabled={isLoading}
             >
-              Submit
+              {isLoading ? 'Submitting...' : 'Submit'}
             </button>
           </div>
         </div>
+
+        {/* Loading Overlay */}
+        {isLoading && (
+          <div className="loading-overlay">
+            <div className="loading-container">
+              <div className="spinner"></div>
+              <p className="loading-text">Uploading your content...</p>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

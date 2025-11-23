@@ -1,4 +1,4 @@
-# FotoAI
+### FotoAI ###
 
 FotoAI is an advanced photo editing application powered by AI technology. It is designed to effortlessly enhance and transform your images, offering powerful tools for both professional photographers and casual users. Whether you're fine-tuning a photo or creating stunning visual effects, FotoAI helps you achieve impressive results with ease.
 
@@ -12,11 +12,11 @@ FotoAI is an advanced photo editing application powered by AI technology. It is 
 
 ---
 
-## Installation
+## Installation ##
 
 To set up FotoAI on your local machine, follow the instructions below.
 
-### Prerequisites
+### Prerequisites ###
 
 Before you begin, make sure you have the following software installed:
 
@@ -25,7 +25,7 @@ Before you begin, make sure you have the following software installed:
 * [Oracle Agent Spec](https://www.oracle.com/), which powers the core API interactions
 * [Wayflow Core](https://www.wayflow.ai/) for enhanced flow management
 
-### Steps
+### Steps ###
 
 1. **Clone the repository:**
 
